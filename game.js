@@ -3,6 +3,7 @@
 var game = new Phaser.Game(800,600, Phaser.AUTO, 'phaser-demo', {preload: preload, create: create, update: update, render: render});
 
 var player;
+var greenEnemies;
 var starfield;
 var cursors;
 var bank;
@@ -20,6 +21,7 @@ function preload() {
     game.load.image('starfield', './assets/starfield.png');
     game.load.image('ship', './assets/player.png');
     game.load.image('bullet', './assets/bullet.png');
+    game.load.image('enemy-green', './assets/enemy-green.png');
 }// ends the preload function
 
 function create() {
@@ -43,6 +45,21 @@ function create() {
     game.physics.enable(player, Phaser.Physics.ARCADE);//this gives us access to the arcade physics engine so we can add physics to our game
     player.body.maxVelocity.setTo(MAXSPEED, MAXSPEED);
     player.body.drag.setTo(DRAG, DRAG);
+
+     //  The baddies!
+    greenEnemies = game.add.group();
+    greenEnemies.enableBody = true;
+    greenEnemies.physicsBodyType = Phaser.Physics.ARCADE;
+    greenEnemies.createMultiple(5, 'enemy-green');
+    greenEnemies.setAll('anchor.x', 0.5);
+    greenEnemies.setAll('anchor.y', 0.5);
+    greenEnemies.setAll('scale.x', 0.5);
+    greenEnemies.setAll('scale.y', 0.5);
+    greenEnemies.setAll('angle', 180);
+    greenEnemies.setAll('outOfBoundsKill', true);
+    greenEnemies.setAll('checkWorldBounds', true);
+
+    launchGreenEnemy();
 
 
     // And some controls to play the game with
@@ -156,8 +173,7 @@ function update() {
         bulletTimer = game.time.now + BULLET_SPACING;
       }
     }
-}
-
+}//ends fireBullet function(which is INSIDE THE UPDATE FUNCTION)
 
   //Squish and rotate ship for illusion of "banking"
   bank = player.body.velocity.x / MAXSPEED;
@@ -170,6 +186,23 @@ function update() {
   shipTrail.y = player.y;
 
 }//ends the update function
+
+function launchGreenEnemy() {
+    var MIN_ENEMY_SPACING = 300;
+    var MAX_ENEMY_SPACING = 3000;
+    var ENEMY_SPEED = 300;
+
+    var enemy = greenEnemies.getFirstExists(false);
+    if (enemy) {
+        enemy.reset(game.rnd.integerInRange(0, game.width), -20);
+        enemy.body.velocity.x = game.rnd.integerInRange(-300, 300);
+        enemy.body.velocity.y = ENEMY_SPEED;
+        enemy.body.drag.x = 100;
+    }
+
+    //  Send another enemy soon
+    game.time.events.add(game.rnd.integerInRange(MIN_ENEMY_SPACING, MAX_ENEMY_SPACING), launchGreenEnemy);
+}//ends the launchGreenEnemy
 
 function render() {
 
