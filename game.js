@@ -9,6 +9,7 @@ var bank;
 var shipTrail;
 var bullets;
 var fireButton;
+var bulletTimer = 0;
 
 var ACCELERATION = 600;
 var DRAG = 400;
@@ -133,14 +134,27 @@ function update() {
   }
 
   function fireBullet() {
-    //  Grab the first bullet we can from the pool
-    var bullet = bullets.getFirstExists(false);
-
-    if (bullet)
+    //to avoid them being allowed to fire too fast we set a time limit
+    //this shit controls the bullet speeds and what not.
+    if (game.time.now > bulletTimer)
     {
-        //  And fire it
-        bullet.reset(player.x, player.y + 8);
-        bullet.body.velocity.y = -400;
+      var BULLET_SPEED = 400;
+      var BULLET_SPACING = 250;
+      // grab the first bullet we can from the pool
+      var bullet = bullets.getFirstExists(false);
+
+      if (bullet)
+      {
+        //and fire it
+        //make bullet come out of tip of ship with right angle
+        var bulletOffset = 20 * Math.sin(game.math.degToRad(player.angle));
+        bullet.reset(player.x + bulletOffset, player.y);
+        bullet.angle = player.angle;
+        game.physics.arcade.velocityFromAngle(bullet.angle - 90, BULLET_SPEED, bullet.body.velocity);
+        bullet.body.velocity.x += player.body.velocity.x;
+
+        bulletTimer = game.time.now + BULLET_SPACING;
+      }
     }
 }
 
