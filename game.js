@@ -22,6 +22,7 @@ function preload() {
     game.load.image('ship', './assets/player.png');
     game.load.image('bullet', './assets/bullet.png');
     game.load.image('enemy-green', './assets/enemy-green.png');
+    game.load.spritesheet('explosion', './assets/explode.png', 128, 128);
 }// ends the preload function
 
 function create() {
@@ -56,8 +57,12 @@ function create() {
     greenEnemies.setAll('scale.x', 0.5);
     greenEnemies.setAll('scale.y', 0.5);
     greenEnemies.setAll('angle', 180);
-    greenEnemies.setAll('outOfBoundsKill', true);
-    greenEnemies.setAll('checkWorldBounds', true);
+    greenEnemies.forEach(function(enemy) {
+      addEnemyEmitterTrail(enemy);
+      enemy.events.onKilled.add(function(){
+        enemy.trail.kill();
+      });
+    });
 
     launchGreenEnemy();
 
@@ -76,7 +81,6 @@ function create() {
     shipTrail.setAlpha(1, 0.01, 800);
     shipTrail.setScale(0.05, 0.4, 0.05, 0.4, 2000, Phaser.Easing.Quintic.Out);
     shipTrail.start(false, 500, 10);
-
 
 }//ends the create function
 
@@ -198,11 +202,38 @@ function launchGreenEnemy() {
         enemy.body.velocity.x = game.rnd.integerInRange(-300, 300);
         enemy.body.velocity.y = ENEMY_SPEED;
         enemy.body.drag.x = 100;
+
+        enemy.trail.start(false, 800, 1);
+
+        //Update function for each enemy ship to update rotation etc//CHANGES THE ENEMY'S ROTATION SO THAT THEY FACE THE DIRECTION THEY ARE FLYING
+        enemy.update = function() {
+          enemy.angle = 180 - game.math.radToDeg(Math.atan2(enemy.body.velocity.x, enemy.body.velocity.y));
+
+          enemy.trail.x = enemy.x;
+          enemy.trail.y = enemy.y - 10;
+
+          //Kill enemies once they go off screen
+          if (enemy.y > game.height + 200) {
+            enemy.kill();
+          }
+        }
     }
 
     //  Send another enemy soon
     game.time.events.add(game.rnd.integerInRange(MIN_ENEMY_SPACING, MAX_ENEMY_SPACING), launchGreenEnemy);
 }//ends the launchGreenEnemy
+
+
+function addEnemyEmitterTrail(enemy) {
+  var enemyTrail = game.add.emitter(enemy.x, player.y - 10, 100);
+  enemyTrail.width = 10;
+  enemyTrail.makeParticles('explosion', [1,2,3,4,5]);
+  enemyTrail.setXSpeed(20, -20);
+  enemyTrail.setYSpeed(50, -50);
+  enemyTrail.setAlpha(0.4, 0, 800);
+  enemyTrail.setScale(0.01, 0.1, 0.01, 0.1, 1000, Phaser.Easing.Quintic.Out);
+  enemy.trail = enemyTrail;
+}// ends addEnemyEmitterTrail(enemy)function
 
 function render() {
 

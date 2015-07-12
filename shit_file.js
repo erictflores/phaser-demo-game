@@ -1,8 +1,12 @@
 
 
 
+maybe we can use the if (enemy.y > game.height) {
+  enemy.kill();
+}
 
-
+function to kill the user if the user goes out
+of bounes???
 
 
 
