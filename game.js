@@ -50,13 +50,36 @@ function update() {
   {
     player.body.acceleration.x = ACCELERATION;
   }
+  // the code below allows y-axis movement
   // else if (cursors.up.isDown)
   // {
-  //   player.body.velocity.y = -200;
+  //   player.body.acceleration.y = -ACCELERATION;
   // }
   // else if (cursors.down.isDown)
   // {
-  //   player.body.velocity.y = 200;
+  //   player.body.acceleration.y = ACCELERATION;
+  // }
+
+  //Stop the player at the screen edges
+  if (player.x > game.width - 50) {
+    player.x = game.width - 50;
+    player.body.acceleration.x = 0;
+  }
+
+  if (player.x < 50) {
+    player.x = 50;
+    player.body.acceleration.x = 0;
+  }
+
+  // the code below allows y-axis movement features
+  // if (player.y > game.height - 50) {
+  //   player.y = game.height - 50;
+  //   player.body.acceleration.y = 0;
+  // }
+
+  // if (player.y < 50) {
+  //   player.y = 50;
+  //   player.body.acceleration.y = 0;
   // }
 
   //Squish and rotate ship for illusion of "banking"
