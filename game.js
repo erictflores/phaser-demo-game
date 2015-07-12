@@ -98,6 +98,18 @@ function update() {
   //   player.body.acceleration.y = 0;
   // }
 
+  //move the ship towards the mouse pointer // not sure if this also accounts for the y-axis, too late to test tonight, plus getting tipsy as fuck.
+  if (game.input.x < game.width - 20 &&
+    game.input.x > 20 &&
+    game.input.y > 20 &&
+    game.input.y < game.height - 20) {
+    var minDist = 200;
+    var dist = game.input.x - player.x;
+    player.body.velocity.x = MAXSPEED * game.math.clamp(dist / minDist, -1, 1);
+  }
+
+
+
   //Squish and rotate ship for illusion of "banking"
   bank = player.body.velocity.x / MAXSPEED;
   player.scale.x = 1 - Math.abs(bank) / 2;
