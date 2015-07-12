@@ -6,6 +6,10 @@ var player;
 var starfield;
 var cursors;
 
+var ACCELERATION = 600;
+var DRAG = 400;
+var MAXSPEED = 400;
+
 
 function preload() {
     game.load.image('starfield', './assets/starfield.png');
@@ -19,6 +23,9 @@ function create() {
     player = game.add.sprite(400, 500, 'ship');
     player.anchor.setTo(0.5, 0.5);
     game.physics.enable(player, Phaser.Physics.ARCADE);//this gives us access to the arcade physics engine so we can add physics to our game
+    player.body.maxVelocity.setTo(MAXSPEED, MAXSPEED);
+    player.body.drag.setTo(DRAG, DRAG);
+
 
     // And some controls to play the game with
     cursors = game.input.keyboard.createCursorKeys();
@@ -28,27 +35,28 @@ function create() {
 
 function update() {
   //scroll the background
-  starfield.tilePosition.y += 3;
+  starfield.tilePosition.y += 2;
 
   // reset the player, then check for movement keys
-  player.body.velocity.setTo(0, 0);
+  // player.body.velocity.setTo(0, 0); deleted step
+  player.body.acceleration.x = 0;
 
   if (cursors.left.isDown)
   {
-    player.body.velocity.x = -200;
+    player.body.acceleration.x = -ACCELERATION;
   }
   else if (cursors.right.isDown)
   {
-    player.body.velocity.x = 200
+    player.body.acceleration.x = ACCELERATION;
   }
-  else if (cursors.up.isDown)
-  {
-    player.body.velocity.y = -200;
-  }
-  else if (cursors.down.isDown)
-  {
-    player.body.velocity.y = 200;
-  }
+  // else if (cursors.up.isDown)
+  // {
+  //   player.body.velocity.y = -200;
+  // }
+  // else if (cursors.down.isDown)
+  // {
+  //   player.body.velocity.y = 200;
+  // }
 
 }//ends the update function
 
