@@ -8,6 +8,7 @@ var starfield;
 var cursors;
 var bank;
 var shipTrail;
+var explosions;
 var bullets;
 var fireButton;
 var bulletTimer = 0;
@@ -81,6 +82,17 @@ function create() {
     shipTrail.setAlpha(1, 0.01, 800);
     shipTrail.setScale(0.05, 0.4, 0.05, 0.4, 2000, Phaser.Easing.Quintic.Out);
     shipTrail.start(false, 500, 10);
+
+    //An explosion pool
+    explosions = game.add.group();
+    explosions.enableBody = true;
+    explosions.physicsBodyType = Phaser.Physics.ARCADE;
+    explosions.createMultiple(30, 'explosion');
+    explosions.setAll('anchor.x', 0.5);
+    explosions.setAll('anchor.y', 0.5);
+    explosions.forEach( function(explosion) {
+      explosion.animations.add('explosion');
+    });
 
 }//ends the create function
 
@@ -189,6 +201,9 @@ function update() {
   shipTrail.x = player.x;
   shipTrail.y = player.y;
 
+  //check collisions
+  game.physics.arcade.overlap(player, greenEnemies, shipCollide, null, this);
+
 }//ends the update function
 
 function launchGreenEnemy() {
@@ -238,3 +253,12 @@ function addEnemyEmitterTrail(enemy) {
 function render() {
 
 }//ends the render function
+
+function shipCollide(player, enemy) {
+    var explosion = explosions.getFirstExists(false);
+    explosion.reset(enemy.body.x + enemy.body.halfWidth, enemy.body.y + enemy.body.halfHeight);
+    explosion.body.velocity.y = enemy.body.velocity.y;
+    explosion.alpha = 0.7;
+    explosion.play('explosion', 30, false, true);
+    enemy.kill();
+}//ends the shipCollide function
