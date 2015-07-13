@@ -362,6 +362,7 @@ var bullets;
 var fireButton;
 var fireButton1;
 var fireButton2;
+var fireButton3;
 var bulletTimer = 0;
 var shields;
 var score = 0;
@@ -391,20 +392,21 @@ function preload() {
     game.load.image('blueEnemyBullet', './assets/enemy-blue-bullet.png');
     game.load.spritesheet('explosion', './assets/explode.png', 128, 128);
     game.load.bitmapFont('spacefont', './assets/spacefont/spacefont.png', './assets/spacefont/spacefont.xml');
-    game.load.image('boss', './assets/boss.png');
+    // game.load.image('boss', './assets/boss.png');
     game.load.image('deathRay', './assets/death-ray.png');
     //load custom images
     game.load.image('superman', './assets/superman.gif');
     game.load.image('background', './assets/alt-background-1.jpg');
     game.load.image('bullet', './assets/red-bullet.gif');
     game.load.image('enemy-blue', './assets/alien-ship.png');
+    game.load.image('boss', './assets/apocalypse.gif');
 }
 
 function create() {
     //  The scrolling starfield background
     starfield = game.add.tileSprite(0, 0, 800, 600, 'background');
 
-    //  Our bullet group
+    //  the bullet group
     bullets = game.add.group();
     bullets.enableBody = true;
     bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -414,9 +416,9 @@ function create() {
     bullets.setAll('outOfBoundsKill', true);
     bullets.setAll('checkWorldBounds', true);
 
-    //  The hero!
+    //  The hero
     player = game.add.sprite(400, 500, 'superman');
-    player.health = 100;
+    player.health = 300;
     player.anchor.setTo(0.5, 0.5);
     game.physics.enable(player, Phaser.Physics.ARCADE);
     player.body.maxVelocity.setTo(MAXSPEED, MAXSPEED);
@@ -639,9 +641,10 @@ function create() {
 
     //  And some controls to play the game with
     cursors = game.input.keyboard.createCursorKeys();
-    fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    fireButton2 = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
     fireButton1 = game.input.keyboard.addKey(Phaser.Keyboard.ONE);
+    fireButton2 = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
+    fireButton3 = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
+
 
     //  Add an emitter for the player's trail
     shipTrail = game.add.emitter(player.x, player.y + 20, 400);
@@ -682,7 +685,7 @@ function create() {
     bossDeath.setScale(0.3, 1.0, 0.3, 1.0, 1000, Phaser.Easing.Quintic.Out);
 
     //  Shields stat
-    shields = game.add.bitmapText(game.world.width - 250, 10, 'spacefont', '' + player.health +'%', 50);
+    shields = game.add.bitmapText(game.world.width - 250, 10,  'spacefont', + player.health +'%', 50);
     shields.render = function () {
         shields.text = 'Shields: ' + Math.max(player.health, 0) +'%';
     };
@@ -748,17 +751,18 @@ function update() {
     }
 
     //  Fire bullet
-    if (player.alive && (fireButton.isDown || game.input.activePointer.isDown)) {
-        fireBullet();
-    }
-
-    if (player.alive && fireButton2.isDown) {
-      fireBullet2();
-    }
-
     if (player.alive && fireButton1.isDown) {
       fireBullet1();
     }
+
+    if (player.alive && (fireButton2.isDown || game.input.activePointer.isDown)) {
+        fireBullet2();
+    }
+
+    if (player.alive && fireButton3.isDown) {
+      fireBullet3();
+    }
+
 
 
     //  Move ship towards mouse pointer
@@ -822,7 +826,7 @@ function render() {
     // game.debug.body(player);
 }
 
-function fireBullet() {
+function fireBullet2() {
     switch (player.weaponLevel) {
         case 1:
         //  To avoid them being allowed to fire too fast we set a time limit
@@ -850,11 +854,11 @@ function fireBullet() {
 
         case 2:
         if (game.time.now > bulletTimer) {
-            var BULLET_SPEED = 400;
+            var BULLET_SPEED = 2000;
             var BULLET_SPACING = 550;
 
 
-            for (var i = 0; i < 3; i++) {
+            for (var i = 0; i < 9; i++) {
                 var bullet = bullets.getFirstExists(false);
                 if (bullet) {
                     //  Make bullet come out of tip of ship with right angle
@@ -863,8 +867,15 @@ function fireBullet() {
                     //  "Spread" angle of 1st and 3rd bullets
                     var spreadAngle;
                     if (i === 0) spreadAngle = -20;
-                    if (i === 1) spreadAngle = 0;
-                    if (i === 2) spreadAngle = 20;
+                    if (i === 1) spreadAngle = -15;
+                    if (i === 2) spreadAngle = -10;
+                    if (i === 3) spreadAngle = -5;
+                    if (i === 4) spreadAngle = 0;
+                    if (i === 5) spreadAngle = 5;
+                    if (i === 6) spreadAngle = 10;
+                    if (i === 7) spreadAngle = 15;
+                    if (i === 8) spreadAngle = 20;
+
                     bullet.angle = player.angle + spreadAngle;
                     game.physics.arcade.velocityFromAngle(spreadAngle - 90, BULLET_SPEED, bullet.body.velocity);
                     bullet.body.velocity.x += player.body.velocity.x;
@@ -874,7 +885,7 @@ function fireBullet() {
         }
     }
 }
-function fireBullet2() {
+function fireBullet3() {
     switch (player.weaponLevel) {
         case 1:
         //  To avoid them being allowed to fire too fast we set a time limit
@@ -902,11 +913,11 @@ function fireBullet2() {
 
         case 2:
         if (game.time.now > bulletTimer) {
-            var BULLET_SPEED = 400;
+            var BULLET_SPEED = 2000;
             var BULLET_SPACING = 550;
 
 
-            for (var i = 0; i < 3; i++) {
+            for (var i = 0; i < 9; i++) {
                 var bullet = bullets.getFirstExists(false);
                 if (bullet) {
                     //  Make bullet come out of tip of ship with right angle
@@ -915,8 +926,14 @@ function fireBullet2() {
                     //  "Spread" angle of 1st and 3rd bullets
                     var spreadAngle;
                     if (i === 0) spreadAngle = -20;
-                    if (i === 1) spreadAngle = 0;
-                    if (i === 2) spreadAngle = 20;
+                    if (i === 1) spreadAngle = -15;
+                    if (i === 2) spreadAngle = -10;
+                    if (i === 3) spreadAngle = -5;
+                    if (i === 4) spreadAngle = 0;
+                    if (i === 5) spreadAngle = 5;
+                    if (i === 6) spreadAngle = 10;
+                    if (i === 7) spreadAngle = 15;
+                    if (i === 8) spreadAngle = 20;
                     bullet.angle = player.angle + spreadAngle;
                     game.physics.arcade.velocityFromAngle(spreadAngle - 0, BULLET_SPEED, bullet.body.velocity);
                     bullet.body.velocity.x += player.body.velocity.x;
@@ -954,11 +971,11 @@ function fireBullet1() {
 
         case 2:
         if (game.time.now > bulletTimer) {
-            var BULLET_SPEED = 400;
+            var BULLET_SPEED = 2000;
             var BULLET_SPACING = 550;
 
 
-            for (var i = 0; i < 3; i++) {
+            for (var i = 0; i < 9; i++) {
                 var bullet = bullets.getFirstExists(false);
                 if (bullet) {
                     //  Make bullet come out of tip of ship with right angle
@@ -967,8 +984,14 @@ function fireBullet1() {
                     //  "Spread" angle of 1st and 3rd bullets
                     var spreadAngle;
                     if (i === 0) spreadAngle = -20;
-                    if (i === 1) spreadAngle = 0;
-                    if (i === 2) spreadAngle = 20;
+                    if (i === 1) spreadAngle = -15;
+                    if (i === 2) spreadAngle = -10;
+                    if (i === 3) spreadAngle = -5;
+                    if (i === 4) spreadAngle = 0;
+                    if (i === 5) spreadAngle = 5;
+                    if (i === 6) spreadAngle = 10;
+                    if (i === 7) spreadAngle = 15;
+                    if (i === 8) spreadAngle = 20;
                     bullet.angle = player.angle + spreadAngle;
                     game.physics.arcade.velocityFromAngle(spreadAngle - 180, BULLET_SPEED, bullet.body.velocity);
                     bullet.body.velocity.x += player.body.velocity.x;
