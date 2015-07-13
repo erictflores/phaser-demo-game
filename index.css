@@ -1,0 +1,8 @@
+.leader-board {
+  border: 1px solid red;
+  width: 30em;
+  height: 60em;
+  text-align: center;
+  float: right;
+  margin-right: 10em;
+}
